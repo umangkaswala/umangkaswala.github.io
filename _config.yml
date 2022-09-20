@@ -1,16 +1,16 @@
 # site settings
-title: Karthik Iyer
+title: Umang Kaswala
 subtitle: Software Developer
-email: Karthik.iyer2@yandex.com
+email: kaswalaumangb@gmail.com
 description:
 baseurl: "" # the subpath of your site, e.g. /blog
 url: # the base hostname & protocol for your site
 author:
-street_address: 334, Radhakrishnan Bhawan
-city: Roorkee
-state: Uttarakhand
-zip_code: 247667
-country: India
+street_address: Mariabrunnstraße 7
+city: Eriskirch
+state: Baden Württemberg
+zip_code: 88097
+country: Germany
 # phone:
 
 # homepage tiles
@@ -19,15 +19,15 @@ tiles-count: 6
 
 # social settings
 500px_url:
-facebook_url: https://www.facebook.com/Karthik.Iyer.0210/
-github_url: https://github.com/KarthikRIyer
+facebook_url: https://www.facebook.com/umangkaswala/
+github_url: https://github.com/umangkaswala
 gitlab_url:
 googleplus_url:
-instagram_url: https://www.instagram.com/rkarthikiyer/
-linkedin_url: https://www.linkedin.com/in/karthikriyer2/
+instagram_url: https://www.instagram.com/_mr_kaswala/
+linkedin_url: https://www.linkedin.com/in/umang-kaswala/
 pinterest_url:
 slack_url:
-twitter_url: https://twitter.com/karthik_r_iyer
+twitter_url:
 
 # build settings
 markdown: kramdown
