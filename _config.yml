@@ -1,0 +1,36 @@
+# site settings
+title: Karthik Iyer
+subtitle: Software Developer
+email: Karthik.iyer2@yandex.com
+description:
+baseurl: "" # the subpath of your site, e.g. /blog
+url: # the base hostname & protocol for your site
+author:
+street_address: 334, Radhakrishnan Bhawan
+city: Roorkee
+state: Uttarakhand
+zip_code: 247667
+country: India
+# phone:
+
+# homepage tiles
+tiles-source: pages # accepts "posts" or "pages"
+tiles-count: 6
+
+# social settings
+500px_url:
+facebook_url: https://www.facebook.com/Karthik.Iyer.0210/
+github_url: https://github.com/KarthikRIyer
+gitlab_url:
+googleplus_url:
+instagram_url: https://www.instagram.com/rkarthikiyer/
+linkedin_url: https://www.linkedin.com/in/karthikriyer2/
+pinterest_url:
+slack_url:
+twitter_url: https://twitter.com/karthik_r_iyer
+
+# build settings
+markdown: kramdown
+
+sass:
+  style: compressed

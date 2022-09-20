@@ -1,0 +1,197 @@
+---
+layout: post
+title: Path Tracing and Global Illumination
+date: '2018-08-05T11:54:47+05:30'
+tags:
+- pathtracing
+- computergraphics
+tumblr_url: https://cgknowhow.tumblr.com/post/176649558239/path-tracing-and-global-illumination
+image: assets/images/cornell_box.png
+---
+<h2>Introduction</h2><p>Path Tracing is a Monte Carlo method of rendering realistic images of
+3-D scenes by simulating light bounces around the scene.</p><p>
+We can speak of illumination in a scene in two ways – Direct and
+Indirect Illumination. Direct Illumination is due to the light
+received by objects directly from the light sources. When observe the
+real world, occluded objects are never completely dark. This is
+because they receive light reflected off other nearby objects. This
+is Indirect Illumination.In the Path Tracing algorithm we need to
+simulate both these effects.</p><p>
+Tracing rays from the light sources in the scene to the camera is
+very inefficient. A lot of computational power is wasted in tracing
+rays that won’t ever reach the camera. The solution for this is
+backward ray-tracing. We shoot rays from the camera into the scene and
+if the ray finally reaches a light source we can calculate the
+point’s illumination.</p><p>We’ll
+consider only point
+light sources and diffuse
+materials for further discussion, specifically Lambertian materials.
+The property of Lambertian materials is that they appear equally
+bright when viewed from any angle. The luminous intensity obeys
+Lambert’s cosine law. According to this law the
+radiant intensity or luminous intensity observed, from an ideal
+diffusely reflecting surface or ideal diffuse radiator is directly
+proportional to the cosine of the angle θ between the direction of
+the incident light and the surface normal.</p><h2>Direct Illumination</h2><p>Calculating Direct Illumination is pretty straightforward.
+Consider a single pixel for which we need to calculate illumination.
+Get the point of intersection of the ray cast into the scene by
+iterating through the objects in the scene, calculate its distance from the
+camera. If the distance is lesser then any previous distance
+calculated for the pixel under consideration, check if the point is
+shadowed by any other object. The way to do this is to cast a ray
+from the point towards the light source and check if the ray
+intersects any other geometry other than the light source. If it
+is shadowed there’ll be no direct illumination on that point. This
+gives us an image with completely dark shadows, which is not how the
+real world looks.</p><figure data-orig-width="512" data-orig-height="512" class="tmblr-full"><img src="https://64.media.tumblr.com/debe11eda3913e51b52257890285dee0/tumblr_inline_pcz574DJzM1v99f5f_540.png" alt="image" data-orig-width="512" data-orig-height="512"/></figure><blockquote><p>Direct Illumination</p></blockquote><p><br/></p><h2>Indirect Illumination</h2><p>The way we’ll use to calculate Indirect Illumination is
+MonteCarlo Integration.
+</p><p><br/></p><figure class="tmblr-full" data-orig-height="42" data-orig-width="614"><img src="https://64.media.tumblr.com/caa8b531f7ee2f9d5deac1de4ec27e8e/tumblr_inline_pcza440HkW1v99f5f_540.png" data-orig-height="42" data-orig-width="614"/></figure><p><a></a><br/></p><p><a></a><a></a><a></a><a></a><a></a><a></a>
+The
+above equation is the simplified version of the Rendering equation
+given by
+Jim
+Kajiya. The LHS is what we need to calculate. It the the radince at
+the given point. In other words it is the colour of that point. <i>L</i>(<i>ωi</i>)
+is
+the radiance received at that point from the direction <i>ω</i><sub><i>i.
+</i></sub>BRDF
+is the Bidirectional reflectance distribution function. It includes
+the colour and properties of the surface. For lambertian surfaces the
+BRDF is <i>ρ/π,
+</i>where
+<i>ρ
+</i>is
+the albedo of the surface. Albedo is the ratio of the light reflected
+to the light received by the surface.  The
+
+<i>π
+</i>in
+the denominator is the energy conserving coefficient. The light
+energy leaving the surface after scattering can never be more than
+what the surface received. Therefore,
+</p><figure data-orig-width="163" data-orig-height="42"><img src="https://64.media.tumblr.com/5384910072dfa276db227639c1692a19/tumblr_inline_pcz592ytJx1v99f5f_540.png" alt="image" data-orig-width="163" data-orig-height="42"/></figure><p>
+where
+<i>C</i><sub><i>d
+</i></sub>is
+a constant.</p><p>
+The
+incoming light is fixed, therefore,</p><figure data-orig-width="138" data-orig-height="42"><img src="https://64.media.tumblr.com/6733ceb82b742db88d15d5d88a92bfd4/tumblr_inline_pcz59qasZ71v99f5f_540.png" alt="image" data-orig-width="138" data-orig-height="42"/></figure><p>
+<i>δω</i>
+is a direction in the unit sphere with centre at the point under
+consideration. Writing the above equation in polar coordinates:</p><figure data-orig-width="246" data-orig-height="49"><img src="https://64.media.tumblr.com/a80c54de7ffe9f935f0d631c04e5a933/tumblr_inline_pcz5ad9RWo1v99f5f_540.png" alt="image" data-orig-width="246" data-orig-height="49"/></figure><p>
+On
+integrating we get,</p><figure data-orig-width="64" data-orig-height="15"><img src="https://64.media.tumblr.com/37c18bacbb7b4f3ada3c633554e473f7/tumblr_inline_pcz5b2eaXm1v99f5f_540.png" alt="image" data-orig-width="64" data-orig-height="15"/></figure><p>
+So,
+if we want to keep the diffuse material colour between 0 and 1 we need
+to divide it by  <i>π.</i></p><p>
+To
+integrate the function at the point under consideration we’ll cast
+a number of secondary rays from the point into the scene and trace
+them recursively. Monte Carlo method work when we choose our sample
+randomly. So the next problem we need to tackle is sample of
+direction in a unit hemisphere with centre at the point under
+consideration.</p><figure data-orig-width="253" data-orig-height="53"><img src="https://64.media.tumblr.com/90d2961803a99ecc548b1048d78d4063/tumblr_inline_pcz5bztCIo1v99f5f_540.png" alt="image" data-orig-width="253" data-orig-height="53"/></figure><p>This
+is a Monte Carlo estimator with probability distribution function
+pdf(x).</p><p>Any
+PDF must integrate to 1 over the sample space.
+In our case each sample is equally probable so out PDF will be a
+constant.</p><figure data-orig-width="123" data-orig-height="46"><img src="https://64.media.tumblr.com/f63ca8bdd0f6acdeef2a9390aa6a903f/tumblr_inline_pcz5cleMVi1v99f5f_540.png" alt="image" data-orig-width="123" data-orig-height="46"/></figure><p><i>p</i><i>(ω)
+</i>is
+a constant so it comes out to be 1/2π.</p><p>We
+need to generate the samples in polar coordinates and not solid angle
+ω.</p><p>Therfore,
+
+</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+<i>p</i>(<i>θ</i>,<i>ϕ</i>) <i>dθ dϕ </i>= <i>p</i>(<i>ω</i>) <i>dω</i></p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+<i>p</i>(<i>θ</i>,<i>ϕ</i>) <i>dθ dϕ </i>= <i>p</i>(<i>ω</i>) sin<i>θ dθdϕ</i>.</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+<i>p</i>(<i>θ</i>,<i>ϕ</i>) = <i>p</i>(<i>ω</i>)sin<i>θ</i>,</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+p(θ,ϕ) = sin<i>θ/
+</i>2<i>π</i></p><p><a></a>
+In
+our case, the pdf is seperable, which means that we can say</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+p(θ) = sin<i>θ</i></p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+p(ϕ )=
+1<i>/
+</i>2<i>π</i></p><p>To
+sample from the above PDF we need to find the Cumulative probability
+distribution function and then find its inverse.</p><figure data-orig-width="171" data-orig-height="45"><img src="https://64.media.tumblr.com/58e00cae70281e9f83784f9d73605da1/tumblr_inline_pcz5ep1kFa1v99f5f_540.png" alt="image" data-orig-width="171" data-orig-height="45"/></figure><figure data-orig-width="142" data-orig-height="45"><img src="https://64.media.tumblr.com/2bfd1c8c8d6b30bb3ab3744ac708562c/tumblr_inline_pcz5euuHWu1v99f5f_540.png" alt="image" data-orig-width="142" data-orig-height="45"/></figure><p>Inverting
+the CDF</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+y = 1 − cosθ,</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+θ = co<i>s</i><sup>−</sup><sup>1</sup><sup></sup>(1−y)</p><p>As
+y is some random number between 0 and 1, 1-y will also be distributed
+uniformly between 0 an 1. So we can replace 1-y by y.</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+<i>y</i>=<i>ϕ/
+</i>2<i>π</i></p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+<i>ϕ</i>=<i>y</i><i>*
+</i>2<i>π</i></p><p>We
+can then choose x and z to get a unit vector.</p><h2>Creating a Co-ordinate System</h2><p>The
+above method generates random samples in a coordinate system centred
+at the origin. But, we need samples at a point on one of the objects
+of the scene. Therefore we need to create another coordinate system
+at that point, generate samples and then convert the samples back to
+world coordinates.</p><p>Let
+the normal be at origin.</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+Consider
+a plane with the equation <i>N</i><i>x
+*</i>x
++
+<i>N</i><i>y</i>∗
+y +
+<i>N</i><i>z</i>∗
+z =
+0.</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+If
+we choose a vector with y-coordinate as 0, we get <i>N</i><i>x
+*</i>x
++ <i>N</i><i>z</i>∗
+z = 0.</p><p><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a><a></a>
+This
+will be satisfied when <i>N</i><i>x
+</i>*
+<i>x
+</i>=
+−<i>N</i><i>z</i>
+* <i>z</i>.</p><p>So,
+choose one vector as Vector(N.z, 0, -N.x) or Vector(-N.z, 0, N.x).
+&ndash;&gt;
+V1</p><p>To
+get the third vector(V2)
+we can calculate the cross product of the Normal with the above
+vector,
+</p><p>and
+there we have a coordinate system oriented along the normal at the
+point under considertion.</p><p>If
+the normal’s y coordinate is greater than he x coordinate it is
+better to choose the first vector with x coordinate zero, for the
+sake of numerical robustness. Then,
+the vector would be Vector(0, -N.z, N.y).</p><h2>Transform sample to World Co-ordinates</h2><p>To
+transform our sample to world coordinates we multiple it by a matrix
+built from vectors in the cartesian coordinate system.</p><figure data-orig-width="158" data-orig-height="67"><img src="https://64.media.tumblr.com/f9b3c73ebea20daa89f1cd61f29af5c8/tumblr_inline_pcz87334rk1v99f5f_540.png" alt="image" data-orig-width="158" data-orig-height="67"/></figure><blockquote><p>Now,
+to calculate Indirect Illumination recursively we write,<br/></p></blockquote><blockquote><p>indirectIllumination
++= rand1 * castRay(hitPt+ε,&hellip;.);</p></blockquote><h2>Bumping the secondary ray and other finishing touches</h2><p>Here
+we add a small vector in direction of ray-casting to the hit Point to
+avoid self shadowing of objects. So now the secondary ray will
+intersect objects other that the object of it’s origin.</p><p>Then,
+we divide the indirect illumination calculated by the PDF 1/2π
+and average it over the number of samples taken, to get the correct
+estimate.</p><p>Indirect
+Illumination just gives the intensity of the indirect light. So,
+before adding it to the direct contribution we need to multiply it by
+the objects’s albedo(colour).</p><figure data-orig-width="512" data-orig-height="512" class="tmblr-full"><img src="https://64.media.tumblr.com/84122b987e7a50fb9323f6df87eb9bfd/tumblr_inline_pcz5i6LZqv1v99f5f_540.png" alt="image" data-orig-width="512" data-orig-height="512"/></figure><blockquote><p>Direct
++ Indirect Illumination(128 samples)</p></blockquote><h2>Conclusion</h2><p>The
+image above is very noisy. The source of the noise is the Monte Carlo
+method itself. It doesn&rsquo;t give us the exact values, instead it gives
+us an estimate. If we calculate 100 estimates we’ll get 100
+different values. The noise decreases as we increase the number of
+samples.</p><figure data-orig-width="512" data-orig-height="512" class="tmblr-full"><img src="https://64.media.tumblr.com/cc55eb969efda03477b257dfda86f210/tumblr_inline_pcz5jf8XKM1v99f5f_540.png" alt="image" data-orig-width="512" data-orig-height="512"/></figure><blockquote><p>Direct
++ Indirect Illumination(10 samples)</p></blockquote><p>This
+is how Path Tracing works. The method is good but this isn’t the best that’s available
+out there. This method fails in cases where we have bright indirect
+lights in our scene, like a bright bulb behind an ajar door. It also
+fails miserably in computing caustics i.e. the bright patterns one
+sees near refractive objects like a glass of water kept on a table,
+or the bottom surface of a swimming pool. To
+solve these problems advanced methods like Metropolis Light
+Transport, Bidirectional Path Tracing and Photon Mapping are used.</p><h2>A
+naive implementation of Path Tracing for diffuse materials:</h2><p><a href="https://github.com/KarthikRIyer/CG/tree/master/Path-tracing_and_Global_Illumination">https://github.com/KarthikRIyer/CG/tree/master/Path-tracing_and_Global_Illumination</a><br/></p><p><br/></p><h2>References:</h2><p><a href="https://www.amazon.in/Computer-Graphics-Foley-Feiner-Hughes/dp/0321399528">Computer
+Graphics Principles and Practice(3rd ed)</a></p><p><a href="https://www.scratchapixel.com/index.php?redirect">ww.scratchapixel.com</a></p>

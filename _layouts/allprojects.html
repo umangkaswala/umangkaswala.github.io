@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+    Forty by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+  -->
+<html>
+
+  {% include head.html %}
+
+  <body>
+
+    {% include header.html %}
+
+
+    <!-- Main -->
+    <div id="main" class="alt">
+
+      <!-- One -->
+      {% assign tiles = site.categories.projects %}
+      <section id="one" class="tiles">
+        {% for tile in tiles%}
+        <article>
+          <span class="image">
+            <img src="{{ tile.image }}" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="{{ tile.link }}" class="link">{{ tile.title }}</a></h3>
+            <!-- <h3>{{ tile.title }}</h3> -->
+            <p>{{ tile.description }}</p>
+          </header>
+        </article>
+        {% endfor %}
+      </section>
+
+    </div>
+
+    {% include footer.html %}
+
+  </body>
+
+</html>
